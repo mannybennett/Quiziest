@@ -3,6 +3,7 @@ import axios from 'axios';
 import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
 import Stack from 'react-bootstrap/Stack';
+import { Button } from 'react-bootstrap';
 
 interface Question {
   category: string;
@@ -13,6 +14,12 @@ interface Question {
   incorrect_answers: string[];
 }
 
+enum Numbers {
+  Zero = 0,
+  One = 1,
+  Two = 2
+}
+
 const generalUrl: string = "https://opentdb.com/api.php?amount=10&category=9&difficulty=medium&type=multiple&encode=url3986"
 // const filmUrl: string = "https://opentdb.com/api.php?amount=10&category=11&difficulty=medium&type=multiple&encode=url3986"
 // const musicUrl: string = "https://opentdb.com/api.php?amount=10&category=12&difficulty=medium&type=multiple&encode=url3986"
@@ -20,6 +27,7 @@ const generalUrl: string = "https://opentdb.com/api.php?amount=10&category=9&dif
 
 function App() {
   const [quizData, setQuizData] = useState<Question[]>([]);
+  const [counter, setCounter] = useState<Numbers>(Numbers.Zero);
   const [loading, setloading] = useState<boolean>(true);
 
   const fetchData = async (): Promise<void> => {
@@ -46,27 +54,30 @@ function App() {
       <h1>Quiziest</h1>
       <Tabs
         defaultActiveKey="general"
-        className="tabs mb-3"
+        className="tabs"
         variant="underline"
         fill
       >
         <Tab tabClassName="tab" eventKey="general" title="General">
           {loading ? <div>Loading...</div> :
+          <div className="content">
+            <h3>{decode(question.question)}</h3>
             <Stack gap={3}>
-              <h3>{decode(question.question)}</h3>
-              <div className="choice">
-                <p className="choiceText">{decode(question.correct_answer)}</p>
-              </div>
-              <div className="choice">
-                <p className="choiceText">{decode(question.incorrect_answers[0])}</p>
-              </div>
-              <div className="choice">
-                <p className="choiceText">{decode(question.incorrect_answers[1])}</p>
-              </div>
-              <div className="choice">
-                <p className="choiceText">{decode(question.incorrect_answers[2])}</p>
-              </div>
+              <Button size="lg" variant="light" className="choiceButton">
+                {decode(question.correct_answer)}
+              </Button>
+              <Button size="lg" variant="light" className="choiceButton">
+                {decode(question.incorrect_answers[0])}
+              </Button>
+              <Button size="lg" variant="light" className="choiceButton">
+                {decode(question.incorrect_answers[1])}
+              </Button>
+              <Button size="lg" variant="light" className="choiceButton">
+                {decode(question.incorrect_answers[2])}
+              </Button>
             </Stack>
+            <Button className="nextButton" variant="secondary">Next</Button>
+          </div>
           }
         </Tab>
         <Tab tabClassName="tab" eventKey="film" title="Film">
