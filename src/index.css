@@ -70,6 +70,13 @@ h3 {
 
 h4 {
   color: var(--white);
+  font-size: 25px;
+  text-align: center;
+  margin: 25px 0px;
+}
+
+h5 {
+  color: var(--white);
   font-size: 20px;
   text-align: center;
   margin: 25px 0px;

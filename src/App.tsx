@@ -1,32 +1,9 @@
 import { useState, useEffect, useMemo } from 'react'
 import axios from 'axios';
-import Tab from 'react-bootstrap/Tab';
+import { Numbers, Question } from './types';
+import General from './components/General';
 import Tabs from 'react-bootstrap/Tabs';
-import Stack from 'react-bootstrap/Stack';
-import Button from 'react-bootstrap/Button';
-
-interface Question {
-  category: string;
-  type: 'multiple' | 'boolean';
-  difficulty: 'easy' | 'medium' | 'hard';
-  question: string;
-  correct_answer: string; 
-  incorrect_answers: string[];
-}
-
-enum Numbers {
-  Zero = 0,
-  One = 1,
-  Two = 2,
-  Three = 3,
-  Four = 4,
-  Five = 5,
-  Six = 6,
-  Seven = 7,
-  Eight = 8, 
-  Nine = 9,
-  Ten = 10
-}
+import Tab from 'react-bootstrap/Tab';
 
 const generalUrl: string = "https://opentdb.com/api.php?amount=10&category=9&difficulty=medium&type=multiple&encode=url3986"
 // const filmUrl: string = "https://opentdb.com/api.php?amount=10&category=11&difficulty=medium&type=multiple&encode=url3986"
@@ -96,9 +73,11 @@ function App() {
   };
 
   const handleRestart = (): void => {
+    setloading(true);
     setCounter(Numbers.Zero);
     setTracker(Numbers.One);
     setScore(Numbers.Zero);
+    fetchData();
   };
 
   const decode = (text: string): string => {
@@ -115,40 +94,20 @@ function App() {
         fill
       >
         <Tab tabClassName="tab" eventKey="general" title="General">
-          {loading ? <div>Loading...</div> :
-            (tracker > Numbers.Ten ? 
-              <div className="content">
-                <h3>Quiz Complete!</h3>
-                <h4>{`You got ${score} out of 10 questions correct.`}</h4>
-                <Button className="restartButton" onClick={handleRestart} variant="danger">Restart</Button>
-              </div> 
-              :
-              <div className="content">
-                <h3>{decode(question.question)}</h3>
-                <Stack gap={3}>
-                  {
-                    answers.map((answer, idx) => {
-                      const isCorrect = answer === correctAnswer;
-                      return (
-                        <Button
-                          key={idx}
-                          className="choiceButton"
-                          onClick={isCorrect ? handleRightAnswer : handleWrongAnswer}
-                          variant={answered && isCorrect ? "success" : (answered ? "danger" : "light")}
-                          disabled={answered ? true : false}
-                          size="lg"
-                        >
-                          {decode(answer)}
-                        </Button>
-                      )
-                    })
-                  }
-                </Stack>
-                <Button onClick={handleNext} className="nextButton" variant="secondary" disabled={answered ? false : true}>Next</Button>
-                <p className="tracker">{`${tracker}/10`}</p>
-              </div>
-            )
-          }
+          <General
+            loading={loading}
+            tracker={tracker}
+            score={score}
+            handleRestart={handleRestart}
+            decode={decode}
+            question={question}
+            answers={answers}
+            correctAnswer={correctAnswer}
+            handleRightAnswer={handleRightAnswer}
+            handleWrongAnswer={handleWrongAnswer}
+            answered={answered}
+            handleNext={handleNext} 
+          />
         </Tab>
         <Tab tabClassName="tab" eventKey="film" title="Film">
 
