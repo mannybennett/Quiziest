@@ -1,21 +1,7 @@
-import { Question, Numbers } from '../types';
+import { useState } from 'react';
+import { Numbers, GeneralProps } from '../types';
 import Stack from 'react-bootstrap/Stack';
 import Button from 'react-bootstrap/Button';
-
-interface GeneralProps {
-  loading: boolean;
-  tracker: Numbers; 
-  score: Numbers;
-  handleRestart: () => void;
-  decode: (encodedText: string) => string;
-  question: Question;
-  answers: string[];
-  correctAnswer: string;
-  handleRightAnswer: () => void;
-  handleWrongAnswer: () => void; 
-  answered: boolean;
-  handleNext: () => void;
-}
 
 const General = ({
   loading,
@@ -32,7 +18,12 @@ const General = ({
   handleNext
 }
   : GeneralProps) => {
+  const [answerChoice, setAnswerChoice] = useState<string>("");
 
+  const selectAnswerChoice = (e: React.MouseEvent<HTMLButtonElement>): void => {
+    return setAnswerChoice(e.currentTarget.value);
+  }
+  
   return (
     <> 
       {loading ? <div>Loading...</div> :
@@ -45,7 +36,7 @@ const General = ({
           :
           <div className="content">
             <h3>{decode(question.question)}</h3>
-            <Stack gap={3}>
+            <Stack gap={2}>
               {
                 answers.map((answer, idx) => {
                   const isCorrect = answer === correctAnswer;
@@ -53,10 +44,11 @@ const General = ({
                     <Button
                       key={idx}
                       className="choiceButton"
-                      onClick={isCorrect ? handleRightAnswer : handleWrongAnswer}
-                      variant={answered && isCorrect ? "success" : (answered ? "danger" : "light")}
+                      onClick={(e) => {selectAnswerChoice(e); isCorrect ? handleRightAnswer() : handleWrongAnswer()}}
+                      variant={answered && isCorrect ? "success" : (answered && !isCorrect && answer === answerChoice ? "danger" : "light")}
                       disabled={answered ? true : false}
                       size="lg"
+                      value={answer}
                     >
                       {decode(answer)}
                     </Button>

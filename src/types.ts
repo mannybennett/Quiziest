@@ -20,3 +20,18 @@ export enum Numbers {
   Nine = 9,
   Ten = 10
 }
+
+export interface GeneralProps {
+  loading: boolean;
+  tracker: Numbers; 
+  score: Numbers;
+  handleRestart: () => void;
+  decode: (encodedText: string) => string;
+  question: Question;
+  answers: string[];
+  correctAnswer: string;
+  handleRightAnswer: () => void;
+  handleWrongAnswer: () => void; 
+  answered: boolean;
+  handleNext: () => void;
+}
