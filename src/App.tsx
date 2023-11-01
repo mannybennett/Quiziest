@@ -86,7 +86,7 @@ function App() {
 
   return (
     <main>
-      <h1>Quiziest</h1>
+      <h1><span>Q</span>uiziest</h1>
       <Tabs
         defaultActiveKey="general"
         className="tabs"
