@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Numbers, GeneralProps } from '../types';
 import Stack from 'react-bootstrap/Stack';
 import Button from 'react-bootstrap/Button';
+import Spinner from 'react-bootstrap/Spinner';
 
 const General = ({
   loading,
@@ -26,7 +27,11 @@ const General = ({
   
   return (
     <> 
-      {loading ? <div>Loading...</div> :
+      {loading ? 
+        <Spinner animation="border" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </Spinner> 
+      :
         (tracker > Numbers.Ten ? 
           <div className="content">
             <h4>Quiz Complete!</h4>

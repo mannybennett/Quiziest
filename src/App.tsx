@@ -1,14 +1,14 @@
 import { useState, useEffect, useMemo } from 'react'
 import axios from 'axios';
-import { Numbers, Question } from './types';
+import { Numbers, Question, Topic, UrlsType } from './types';
 import General from './components/General';
 import Tabs from 'react-bootstrap/Tabs';
 import Tab from 'react-bootstrap/Tab';
 
 const generalUrl: string = "https://opentdb.com/api.php?amount=10&category=9&difficulty=medium&type=multiple&encode=url3986"
-// const filmUrl: string = "https://opentdb.com/api.php?amount=10&category=11&difficulty=medium&type=multiple&encode=url3986"
-// const musicUrl: string = "https://opentdb.com/api.php?amount=10&category=12&difficulty=medium&type=multiple&encode=url3986"
-// const videoGamesUrl: string = "https://opentdb.com/api.php?amount=10&category=15&difficulty=medium&type=multiple&encode=url3986"
+const filmUrl: string = "https://opentdb.com/api.php?amount=10&category=11&difficulty=medium&type=multiple&encode=url3986"
+const musicUrl: string = "https://opentdb.com/api.php?amount=10&category=12&difficulty=medium&type=multiple&encode=url3986"
+const videoGamesUrl: string = "https://opentdb.com/api.php?amount=10&category=15&difficulty=medium&type=multiple&encode=url3986"
 
 function App() {
   const [quizData, setQuizData] = useState<Question[]>([]);
@@ -18,18 +18,48 @@ function App() {
   const [tracker, setTracker] = useState<Numbers>(Numbers.One);
   const [answered, setAnswered] = useState<boolean>(false);
   const [loading, setloading] = useState<boolean>(true);
+  const [topic, setTopic] = useState<string>("general");
+
+  const topics: Topic[] = [
+    { key: "general", title: "General" },
+    { key: "film", title: "Film" },
+    { key: "music", title: "Music" },
+    { key: "videogames", title: "Video Games" },
+  ];
+
+  const urls: UrlsType = {
+    general: generalUrl,
+    film: filmUrl,
+    music: musicUrl,
+    videogames: videoGamesUrl
+  };
+
+  const handleTopic = (topic: any): void => {
+    setTopic(topic);
+  };
 
   const fetchData = async (): Promise<void> => {
-    await axios.get(generalUrl)
-      .then(results => {
-        setQuizData(results.data.results);
-        setloading(false)
-      });
+    const topicUrl = urls[topic];
+    const maxRetries = 5;
+
+    for(let i = 0; i < maxRetries; i++) {
+        try {
+            const results = await axios.get(topicUrl);
+            setQuizData(results.data.results);
+            setloading(false);
+            break;
+        } catch (error) {
+            console.error(`Error fetching data for - ${topic} - data (Attempt ${i + 1}): `, error);
+
+            if(i === maxRetries - 1) throw error;
+        }
+    }
   };
 
   useEffect(() => {
     fetchData();
-  }, []);
+    handleRestart();
+  }, [topic]);
 
   const question: Question = quizData[counter] ?? null;
 
@@ -88,36 +118,30 @@ function App() {
     <main>
       <h1><span>Q</span>uiziest</h1>
       <Tabs
+        onSelect={(e) => handleTopic(e)}
         defaultActiveKey="general"
         className="tabs"
         variant="underline"
         fill
       >
-        <Tab tabClassName="tab" eventKey="general" title="General">
-          <General
-            loading={loading}
-            tracker={tracker}
-            score={score}
-            handleRestart={handleRestart}
-            decode={decode}
-            question={question}
-            answers={answers}
-            correctAnswer={correctAnswer}
-            handleRightAnswer={handleRightAnswer}
-            handleWrongAnswer={handleWrongAnswer}
-            answered={answered}
-            handleNext={handleNext} 
-          />
-        </Tab>
-        <Tab tabClassName="tab" eventKey="film" title="Film">
-
-        </Tab>
-        <Tab tabClassName="tab" eventKey="music" title="Music">
-
-        </Tab>
-        <Tab tabClassName="tab" eventKey="videogames" title="Video Games">
-
-        </Tab>
+        {topics.map(topic => (
+          <Tab key={topic.key} tabClassName="tab" eventKey={topic.key} title={topic.title}>
+            <General
+              loading={loading}
+              tracker={tracker}
+              score={score}
+              handleRestart={handleRestart}
+              decode={decode}
+              question={question}
+              answers={answers}
+              correctAnswer={correctAnswer}
+              handleRightAnswer={handleRightAnswer}
+              handleWrongAnswer={handleWrongAnswer}
+              answered={answered}
+              handleNext={handleNext} 
+            />
+          </Tab>
+        ))}
       </Tabs>
     </main>
   )

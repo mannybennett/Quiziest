@@ -35,3 +35,12 @@ export interface GeneralProps {
   answered: boolean;
   handleNext: () => void;
 }
+
+export type Topic = {
+  key: string;
+  title: string;
+};
+
+export type UrlsType = {
+  [key in Topic['key']]: string;
+};
