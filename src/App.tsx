@@ -40,7 +40,7 @@ function App() {
 
   const fetchData = async (): Promise<void> => {
     const topicUrl = urls[topic];
-    const maxRetries = 5;
+    const maxRetries = 10;
 
     for(let i = 0; i < maxRetries; i++) {
         try {
@@ -50,7 +50,6 @@ function App() {
             break;
         } catch (error) {
             console.error(`Error fetching data for - ${topic} - data (Attempt ${i + 1}): `, error);
-
             if(i === maxRetries - 1) throw error;
         }
     }
@@ -104,6 +103,7 @@ function App() {
 
   const handleRestart = (): void => {
     setloading(true);
+    setAnswered(false);
     setCounter(Numbers.Zero);
     setTracker(Numbers.One);
     setScore(Numbers.Zero);

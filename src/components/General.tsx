@@ -28,7 +28,7 @@ const General = ({
   return (
     <> 
       {loading ? 
-        <Spinner animation="border" role="status">
+        <Spinner style={{ marginTop: "100px" }} animation="border" role="status">
           <span className="visually-hidden">Loading...</span>
         </Spinner> 
       :
